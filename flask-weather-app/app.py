@@ -1,6 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response
 from database import init_db, save_weather_search, get_recent_searches
 from weather_service import get_weather, get_all_counties
+import csv
+from io import StringIO
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
@@ -93,6 +96,42 @@ def api_recent_searches():
             'timestamp': search['timestamp']
         })
     return jsonify(result), 200
+
+@app.route('/export-csv', methods=['GET'])
+def export_csv():
+    """Export weather search history as CSV."""
+    try:
+        searches = get_recent_searches(limit=1000)
+        
+        if not searches:
+            return jsonify({'error': 'No data to export'}), 400
+        
+        # Create CSV in memory
+        si = StringIO()
+        writer = csv.writer(si)
+        
+        # Write header
+        writer.writerow(['County', 'Temperature (°C)', 'Conditions', 'Wind Speed (km/h)', 'Timestamp'])
+        
+        # Write data rows
+        for search in searches:
+            writer.writerow([
+                search['county'],
+                round(search['temperature'], 1),
+                search['conditions'],
+                round(search['wind_speed'], 1),
+                search['timestamp']
+            ])
+        
+        # Create response
+        output = make_response(si.getvalue())
+        timestamp = datetime.now().strftime('%Y-%m-%d')
+        output.headers["Content-Disposition"] = f"attachment; filename=liberia-weather-{timestamp}.csv"
+        output.headers["Content-type"] = "text/csv"
+        
+        return output
+    except Exception as e:
+        return jsonify({'error': f'Export failed: {str(e)}'}), 500
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -1,9 +1,24 @@
-// AJAX Weather Form Handler
+// AJAX Weather Form Handler & Feature Management
 document.addEventListener('DOMContentLoaded', function() {
     const weatherForm = document.getElementById('weatherForm');
+    const tempToggle = document.getElementById('tempToggle');
+    const exportBtn = document.getElementById('exportBtn');
+    
+    // Initialize temperature unit from localStorage
+    initializeTempUnit();
     
     // Uncomment below to enable AJAX mode (disable page refresh)
     // weatherForm.addEventListener('submit', handleFormSubmitAJAX);
+    
+    // Temperature toggle listener
+    if (tempToggle) {
+        tempToggle.addEventListener('change', handleTempToggle);
+    }
+    
+    // Export CSV listener
+    if (exportBtn) {
+        exportBtn.addEventListener('click', handleExportCSV);
+    }
 });
 
 /**
@@ -171,5 +186,108 @@ function showAlert(message, type = 'error') {
             const alert = mainElement.querySelector('.alert-success');
             if (alert) alert.remove();
         }, 5000);
+    }
+}
+
+/**
+ * Initialize temperature unit from localStorage and apply it
+ */
+function initializeTempUnit() {
+    const isFahrenheit = localStorage.getItem('useFahrenheit') === 'true';
+    const toggle = document.getElementById('tempToggle');
+    
+    if (toggle) {
+        toggle.checked = isFahrenheit;
+    }
+    
+    if (isFahrenheit) {
+        convertAllTemperatures(true);
+    }
+}
+
+/**
+ * Handle temperature unit toggle
+ */
+function handleTempToggle(event) {
+    const isFahrenheit = event.target.checked;
+    localStorage.setItem('useFahrenheit', isFahrenheit.toString());
+    convertAllTemperatures(isFahrenheit);
+}
+
+/**
+ * Convert all temperatures on page between Celsius and Fahrenheit
+ */
+function convertAllTemperatures(toFahrenheit) {
+    // Update unit symbols
+    const unitSymbols = document.querySelectorAll('.unit-symbol');
+    unitSymbols.forEach(symbol => {
+        symbol.textContent = toFahrenheit ? 'F' : 'C';
+    });
+    
+    // Update current weather display
+    const tempValue = document.querySelector('.temp-value');
+    if (tempValue) {
+        const rawTemp = parseFloat(document.querySelector('.temp-display-raw')?.textContent || tempValue.textContent);
+        if (!isNaN(rawTemp)) {
+            const converted = toFahrenheit ? celsiusToFahrenheit(rawTemp) : rawTemp;
+            tempValue.textContent = converted.toFixed(1) + '°' + (toFahrenheit ? 'F' : 'C');
+        }
+    }
+    
+    // Update forecast temperatures
+    const forecastHighValues = document.querySelectorAll('.forecast-high-value');
+    const forecastLowValues = document.querySelectorAll('.forecast-low-value');
+    
+    forecastHighValues.forEach(elem => {
+        const celsius = parseFloat(elem.textContent);
+        if (!isNaN(celsius)) {
+            const converted = toFahrenheit ? celsiusToFahrenheit(celsius) : celsius;
+            elem.textContent = converted.toFixed(0) + '°';
+        }
+    });
+    
+    forecastLowValues.forEach(elem => {
+        const celsius = parseFloat(elem.textContent);
+        if (!isNaN(celsius)) {
+            const converted = toFahrenheit ? celsiusToFahrenheit(celsius) : celsius;
+            elem.textContent = converted.toFixed(0) + '°';
+        }
+    });
+    
+    // Update table temperatures
+    const tempCells = document.querySelectorAll('.temp-cell');
+    tempCells.forEach(cell => {
+        const celsius = parseFloat(cell.textContent);
+        if (!isNaN(celsius)) {
+            const converted = toFahrenheit ? celsiusToFahrenheit(celsius) : celsius;
+            cell.textContent = converted.toFixed(1);
+        }
+    });
+}
+
+/**
+ * Convert Celsius to Fahrenheit
+ */
+function celsiusToFahrenheit(celsius) {
+    return (celsius * 9/5) + 32;
+}
+
+/**
+ * Handle CSV export of weather history
+ */
+function handleExportCSV() {
+    try {
+        // Use the server endpoint to download CSV
+        const link = document.createElement('a');
+        link.href = '/export-csv';
+        link.download = `liberia-weather-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showAlert('Weather history export started!', 'success');
+    } catch (error) {
+        console.error('Export error:', error);
+        showAlert('Failed to export CSV. Please try again.', 'error');
     }
 }

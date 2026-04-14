@@ -51,13 +51,13 @@ WEATHER_CODES = {
 
 def get_weather(county):
     """
-    Fetch current weather for a Liberian county.
+    Fetch current weather and 7-day forecast for a Liberian county.
     
     Args:
         county (str): Name of the county in Liberia
         
     Returns:
-        dict: Weather data including temperature, conditions, wind_speed, or error dict
+        dict: Weather data including current conditions, forecast, or error dict
     """
     if county not in LIBERIAN_COUNTIES:
         return {'error': f"County '{county}' not found. Please select a valid county."}
@@ -69,6 +69,7 @@ def get_weather(county):
             'latitude': coords['lat'],
             'longitude': coords['lon'],
             'current': 'temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m',
+            'daily': 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum',
             'timezone': 'Africa/Monrovia'
         }
         
@@ -77,9 +78,25 @@ def get_weather(county):
         
         data = response.json()
         current = data['current']
+        daily = data['daily']
         
         weather_code = current.get('weather_code', 0)
         conditions = WEATHER_CODES.get(weather_code, "Unknown conditions")
+        
+        # Process forecast data
+        forecast = []
+        for i in range(min(7, len(daily['time']))):
+            day_code = daily['weather_code'][i]
+            day_condition = WEATHER_CODES.get(day_code, "Unknown")
+            
+            forecast.append({
+                'date': daily['time'][i],
+                'day_name': get_day_name(daily['time'][i]),
+                'temp_max': round(daily['temperature_2m_max'][i], 1),
+                'temp_min': round(daily['temperature_2m_min'][i], 1),
+                'condition': day_condition,
+                'precipitation_sum': daily['precipitation_sum'][i]
+            })
         
         return {
             'error': None,
@@ -88,7 +105,8 @@ def get_weather(county):
             'conditions': conditions,
             'humidity': current.get('relative_humidity_2m'),
             'wind_speed': current.get('wind_speed_10m'),
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'forecast': forecast
         }
     
     except requests.exceptions.RequestException as e:
@@ -99,3 +117,18 @@ def get_weather(county):
 def get_all_counties():
     """Return list of all available Liberian counties."""
     return sorted(list(LIBERIAN_COUNTIES.keys()))
+
+def get_day_name(date_str):
+    """
+    Convert date string to day name.
+    
+    Args:
+        date_str (str): Date in YYYY-MM-DD format
+        
+    Returns:
+        str: Day name (Mon, Tue, Wed, etc.)
+    """
+    from datetime import datetime as dt
+    date_obj = dt.strptime(date_str, '%Y-%m-%d')
+    day_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    return day_names[date_obj.weekday()]
