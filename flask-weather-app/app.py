@@ -1,0 +1,108 @@
+from flask import Flask, render_template, request, jsonify
+from database import init_db, save_weather_search, get_recent_searches
+from weather_service import get_weather, get_all_counties
+
+app = Flask(__name__)
+app.config['JSON_SORT_KEYS'] = False
+
+# Initialize database on startup
+init_db()
+
+@app.route('/')
+def index():
+    """Main page - display form and recent searches."""
+    counties = get_all_counties()
+    recent_searches = get_recent_searches(10)
+    return render_template('index.html', counties=counties, recent_searches=recent_searches)
+
+@app.route('/get-weather', methods=['POST'])
+def get_weather_form():
+    """Handle form-based weather request (page refresh)."""
+    county = request.form.get('county', '').strip()
+    
+    if not county:
+        counties = get_all_counties()
+        recent_searches = get_recent_searches(10)
+        return render_template('index.html', 
+                             counties=counties, 
+                             recent_searches=recent_searches,
+                             error="Please select a county.")
+    
+    weather_data = get_weather(county)
+    
+    if weather_data.get('error'):
+        counties = get_all_counties()
+        recent_searches = get_recent_searches(10)
+        return render_template('index.html', 
+                             counties=counties, 
+                             recent_searches=recent_searches,
+                             error=weather_data['error'])
+    
+    # Save to database
+    save_weather_search(
+        county=weather_data['county'],
+        temperature=weather_data['temperature'],
+        conditions=weather_data['conditions'],
+        wind_speed=weather_data['wind_speed']
+    )
+    
+    # Refresh recent searches
+    recent_searches = get_recent_searches(10)
+    
+    counties = get_all_counties()
+    return render_template('index.html', 
+                         counties=counties, 
+                         weather=weather_data,
+                         recent_searches=recent_searches)
+
+@app.route('/api/weather', methods=['POST'])
+def get_weather_api():
+    """Handle AJAX weather request (returns JSON)."""
+    data = request.get_json()
+    county = data.get('county', '').strip()
+    
+    if not county:
+        return jsonify({'error': 'Please select a county.'}), 400
+    
+    weather_data = get_weather(county)
+    
+    if weather_data.get('error'):
+        return jsonify(weather_data), 400
+    
+    # Save to database
+    save_weather_search(
+        county=weather_data['county'],
+        temperature=weather_data['temperature'],
+        conditions=weather_data['conditions'],
+        wind_speed=weather_data['wind_speed']
+    )
+    
+    return jsonify(weather_data), 200
+
+@app.route('/api/recent-searches', methods=['GET'])
+def api_recent_searches():
+    """API endpoint to fetch recent searches as JSON."""
+    searches = get_recent_searches(10)
+    result = []
+    for search in searches:
+        result.append({
+            'county': search['county'],
+            'temperature': search['temperature'],
+            'conditions': search['conditions'],
+            'wind_speed': search['wind_speed'],
+            'timestamp': search['timestamp']
+        })
+    return jsonify(result), 200
+
+@app.errorhandler(404)
+def page_not_found(error):
+    """Handle 404 errors."""
+    return render_template('index.html', error="Page not found."), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    """Handle 500 errors."""
+    return render_template('index.html', error="Internal server error."), 500
+
+if __name__ == '__main__':
+    app.run(debug=True, host='127.0.0.1', port=5000)

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liberia Weather Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⛅ Liberia Weather Finder</h1>
+            <p>Get current weather for any county in Liberia</p>
+        </header>
+
+        <main>
+            <!-- Error/Success Messages -->
+            {% if error %}
+                <div class="alert alert-error">
+                    <strong>Error:</strong> {{ error }}
+                </div>
+            {% endif %}
+
+            <!-- Weather Form -->
+            <section class="weather-form-section">
+                <h2>Select a County</h2>
+                <form id="weatherForm" method="POST" action="/get-weather">
+                    <div class="form-group">
+                        <label for="county">Choose a county:</label>
+                        <select id="county" name="county" required>
+                            <option value="">-- Select a county --</option>
+                            {% for county in counties %}
+                                <option value="{{ county }}">{{ county }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Get Weather</button>
+                </form>
+            </section>
+
+            <!-- Weather Display -->
+            {% if weather and not weather.error %}
+                <section class="weather-display-section">
+                    <h2>Current Weather in {{ weather.county }}</h2>
+                    <div class="weather-card">
+                        <div class="weather-main">
+                            <div class="temperature">
+                                <span class="temp-value">{{ weather.temperature | round(1) }}°C</span>
+                            </div>
+                            <div class="weather-details">
+                                <p class="conditions"><strong>Conditions:</strong> {{ weather.conditions }}</p>
+                                <p class="humidity"><strong>Humidity:</strong> {{ weather.humidity }}%</p>
+                                <p class="wind"><strong>Wind Speed:</strong> {{ weather.wind_speed | round(1) }} km/h</p>
+                                <p class="timestamp"><small>{{ weather.timestamp }}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            {% endif %}
+
+            <!-- Recent Searches -->
+            <section class="recent-searches-section">
+                <h2>Recent Searches</h2>
+                {% if recent_searches %}
+                    <table class="searches-table">
+                        <thead>
+                            <tr>
+                                <th>County</th>
+                                <th>Temperature</th>
+                                <th>Conditions</th>
+                                <th>Wind Speed</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="searchesBody">
+                            {% for search in recent_searches %}
+                                <tr>
+                                    <td>{{ search['county'] }}</td>
+                                    <td>{{ search['temperature'] | round(1) }}°C</td>
+                                    <td>{{ search['conditions'] }}</td>
+                                    <td>{{ search['wind_speed'] | round(1) }} km/h</td>
+                                    <td><small>{{ search['timestamp'] }}</small></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="no-data">No recent searches yet. Get started by selecting a county above!</p>
+                {% endif %}
+            </section>
+        </main>
+
+        <footer>
+            <p>Weather data powered by <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a></p>
+            <p>&copy; 2026 Liberia Weather Finder</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

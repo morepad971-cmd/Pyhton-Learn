@@ -1,0 +1,286 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+main {
+    padding: 40px 20px;
+}
+
+/* Form Styles */
+.weather-form-section {
+    margin-bottom: 40px;
+}
+
+.weather-form-section h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+select:hover,
+select:focus {
+    border-color: #667eea;
+    outline: none;
+}
+
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Alert Messages */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.alert-error {
+    background-color: #fee;
+    border-left: 4px solid #c33;
+    color: #c33;
+}
+
+.alert-success {
+    background-color: #efe;
+    border-left: 4px solid #3c3;
+    color: #3c3;
+}
+
+/* Weather Display */
+.weather-display-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    border-left: 5px solid #667eea;
+}
+
+.weather-display-section h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.weather-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.weather-main {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.temperature {
+    flex-shrink: 0;
+}
+
+.temp-value {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.weather-details {
+    flex: 1;
+}
+
+.weather-details p {
+    margin: 10px 0;
+    font-size: 1.05rem;
+    color: #555;
+}
+
+.conditions {
+    color: #764ba2;
+    font-weight: 600;
+}
+
+.timestamp {
+    color: #999;
+    margin-top: 15px;
+}
+
+/* Recent Searches */
+.recent-searches-section {
+    margin-top: 40px;
+}
+
+.recent-searches-section h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.searches-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.searches-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.searches-table th,
+.searches-table td {
+    padding: 15px 20px;
+    text-align: left;
+}
+
+.searches-table tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+}
+
+.searches-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.searches-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.no-data {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-size: 1.05rem;
+}
+
+/* Footer */
+footer {
+    background: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #eee;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    main {
+        padding: 20px 15px;
+    }
+
+    .weather-main {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .temp-value {
+        font-size: 2.5rem;
+    }
+
+    .searches-table th,
+    .searches-table td {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Loading State */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
