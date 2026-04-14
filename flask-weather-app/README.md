@@ -1,8 +1,8 @@
-# ⛅ Liberia Weather Finder
+# Liberia Weather Finder
 
 A Flask web application that allows users to check current weather conditions for any county in Liberia. Built with Python, Flask, and the free Open-Meteo weather API.
 
-## 🌍 Features
+## Features
 
 - **County Selection**: Choose from all 15 counties in Liberia via dropdown menu
 - **Real-Time Weather**: Get current temperature, conditions, humidity, and wind speed
@@ -11,11 +11,11 @@ A Flask web application that allows users to check current weather conditions fo
 - **No API Key Required**: Uses the free Open-Meteo API with no authentication needed
 - **AJAX Ready**: JavaScript included for smooth AJAX updates (can be enabled with one line)
 
-## 📋 Supported Liberian Counties
+## Supported Liberian Counties
 
 Bomi, Bong, Gbarpolu, Grand Bassa, Grand Cape Mount, Grand Gedeh, Grand Kru, Lofa, Margibi, Maryland, Montserrado, Nimba, River Cess, River Gee, Sinoe
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -52,7 +52,7 @@ Bomi, Bong, Gbarpolu, Grand Bassa, Grand Cape Mount, Grand Gedeh, Grand Kru, Lof
    - Navigate to `http://127.0.0.1:5000`
    - Start checking weather!
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 flask-weather-app/
@@ -69,7 +69,7 @@ flask-weather-app/
     └── script.js         # AJAX functionality
 ```
 
-## 🔧 How It Works
+## How It Works
 
 ### 1. **User Selects County**
    - User chooses a county from the dropdown on the homepage
@@ -88,7 +88,7 @@ flask-weather-app/
    - Recent searches table at the bottom shows past lookups
    - Includes temperature, conditions, wind speed, and timestamp
 
-## ⚡ Enable AJAX Mode (Optional Enhancement)
+## Enable AJAX Mode (Optional Enhancement)
 
 By default, form submission causes a page refresh. To enable smooth AJAX updates:
 
@@ -99,7 +99,7 @@ By default, form submission causes a page refresh. To enable smooth AJAX updates
 
 Now form submissions will update weather dynamically without page reload!
 
-## 📡 API Details
+## API Details
 
 **Weather Source**: [Open-Meteo](https://open-meteo.com/)
 
@@ -108,7 +108,7 @@ Now form submissions will update weather dynamically without page reload!
 - **Rate Limit**: Unlimited (generous for hobbyist use)
 - **Authentication**: None required
 
-## 💾 Database
+## Database
 
 **SQLite Table**: `weather_searches`
 
@@ -121,7 +121,7 @@ Now form submissions will update weather dynamically without page reload!
 | wind_speed | REAL | Wind speed in km/h |
 | timestamp | DATETIME | When the search was performed |
 
-## 🎨 Customization
+## Customization
 
 ### Change Colors
 Edit `static/style.css` and modify the gradient colors in the `body` selector:
@@ -135,7 +135,7 @@ Edit `weather_service.py` and expand the API parameters or weather codes diction
 ### Modify County Coordinates
 Update the `LIBERIAN_COUNTIES` dictionary in `weather_service.py` with different latitude/longitude values.
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **Error: `ModuleNotFoundError: No module named 'flask'`**
 - Install dependencies: `pip install -r requirements.txt`
@@ -151,20 +151,20 @@ Update the `LIBERIAN_COUNTIES` dictionary in `weather_service.py` with different
 - Verify Open-Meteo API is accessible
 - Check browser console for JavaScript errors
 
-## 📦 Dependencies
+## Dependencies
 
 - **Flask** 2.3.3 - Web framework
 - **Requests** 2.31.0 - HTTP library for API calls
 - **Werkzeug** 2.3.7 - WSGI utilities
 
-## 🔐 Security Notes
+## Security Notes
 
 - This is a development application
 - Use a production WSGI server (Gunicorn, uWSGI) for deployment
 - For production, implement rate limiting and input validation
 - Don't commit `.db` files or sensitive data to version control
 
-## 📝 Future Enhancements
+## Future Enhancements
 
 - 7-day weather forecast view
 - Hourly weather data
@@ -173,15 +173,15 @@ Update the `LIBERIAN_COUNTIES` dictionary in `weather_service.py` with different
 - Email notifications for weather alerts
 - Weather caching to reduce API calls
 
-## 📄 License
+## License
 
 Open source. Feel free to use and modify for learning purposes.
 
-## 👨‍💻 Author
+## Author
 
 Created as a learning project - Flask Weather Application for Liberian Counties
 
-## 🤝 Contributing
+## Contributing
 
 Feel free to fork, modify, and improve this project!
 
