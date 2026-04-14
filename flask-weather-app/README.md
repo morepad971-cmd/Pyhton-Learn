@@ -69,7 +69,7 @@ flask-weather-app/
     └── script.js         # AJAX functionality
 ```
 
-## 🔧 How It Works
+## How It Works
 
 ### 1. **User Selects County**
    - User chooses a county from the dropdown on the homepage
