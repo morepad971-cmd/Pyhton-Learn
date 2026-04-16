@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, make_response
 from database import init_db, save_weather_search, get_recent_searches
 from weather_service import get_weather, get_all_counties
+from claude_service import get_county_description, get_multi_descriptions
 import csv
 from io import StringIO
 from datetime import datetime
@@ -96,6 +97,41 @@ def api_recent_searches():
             'timestamp': search['timestamp']
         })
     return jsonify(result), 200
+
+@app.route('/api/county-description', methods=['POST'])
+def api_county_description():
+    """Fetch AI-generated county description with brief/detailed toggle."""
+    try:
+        data = request.get_json()
+        county = data.get('county', '').strip()
+        brief = data.get('brief', True)  # True for brief, False for detailed
+        
+        if not county:
+            return jsonify({'error': 'County name required'}), 400
+        
+        result = get_county_description(county, brief=brief)
+        
+        if result.get('success'):
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 500
+    except Exception as e:
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+@app.route('/api/county-descriptions', methods=['POST'])
+def api_county_descriptions():
+    """Fetch both brief and detailed descriptions for a county."""
+    try:
+        data = request.get_json()
+        county = data.get('county', '').strip()
+        
+        if not county:
+            return jsonify({'error': 'County name required'}), 400
+        
+        result = get_multi_descriptions(county)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/export-csv', methods=['GET'])
 def export_csv():

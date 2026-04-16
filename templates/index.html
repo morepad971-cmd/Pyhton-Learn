@@ -15,10 +15,17 @@
                     <h1><i class="fas fa-cloud-sun"></i> Liberia Weather Finder</h1>
                     <p>Get current weather for any county in Liberia</p>
                 </div>
-                <div class="temp-toggle-container">
-                    <label for="tempToggle" class="temp-label">°C</label>
-                    <input type="checkbox" id="tempToggle" class="temp-switch">
-                    <label for="tempToggle" class="temp-label">°F</label>
+                <div class="header-controls">
+                    <div class="temp-toggle-container">
+                        <label for="tempToggle" class="temp-label">°C</label>
+                        <input type="checkbox" id="tempToggle" class="temp-switch">
+                        <label for="tempToggle" class="temp-label">°F</label>
+                    </div>
+                    <div class="theme-toggle-container">
+                        <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -31,27 +38,57 @@
                 </div>
             {% endif %}
 
-            <!-- Weather Form -->
+            <!-- Weather Form with Search -->
             <section class="weather-form-section">
                 <h2>Select a County</h2>
+                <div class="search-container">
+                    <div class="county-search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="countySearch" 
+                            class="county-search" 
+                            placeholder="Search county..."
+                            autocomplete="off">
+                        <div id="searchSuggestions" class="search-suggestions hidden">
+                            <!-- Autocomplete suggestions will appear here -->
+                        </div>
+                    </div>
+                </div>
                 <form id="weatherForm" method="POST" action="/get-weather">
                     <div class="form-group">
-                        <label for="county">Choose a county:</label>
-                        <select id="county" name="county" required>
+                        <label for="county">Or select from list:</label>
+                        <select id="county" name="county">
                             <option value="">-- Select a county --</option>
                             {% for county in counties %}
                                 <option value="{{ county }}">{{ county }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Get Weather</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Get Weather</button>
                 </form>
+            </section>
+
+            <!-- Pinned Counties -->
+            <section id="pinnedSection" class="pinned-section hidden">
+                <div class="pinned-header">
+                    <h3>Pinned Counties</h3>
+                    <button id="clearPinned" class="btn-icon" title="Clear all pins"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="pinnedCounties" class="pinned-grid">
+                    <!-- Pinned counties will appear here -->
+                </div>
             </section>
 
             <!-- Weather Display -->
             {% if weather and not weather.error %}
                 <section class="weather-display-section">
-                    <h2>Current Weather in {{ weather.county }}</h2>
+                    <div class="weather-header">
+                        <h2>Current Weather in {{ weather.county }}</h2>
+                        <button class="btn-icon pin-btn" onclick="pinCounty('{{ weather.county }}', {{ weather.temperature }})" title="Pin this county">
+                            <i class="fas fa-thumbtack"></i>
+                        </button>
+                    </div>
                     <div class="weather-card">
                         <div class="weather-main">
                             <div class="temperature">
@@ -64,6 +101,26 @@
                                 <p class="timestamp"><small>{{ weather.timestamp }}</small></p>
                                 <p class="temp-display-raw" style="display:none;">{{ weather.temperature }}</p>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- County Description with Toggle -->
+                <section class="description-section" id="descriptionSection">
+                    <div class="description-header">
+                        <h3><i class="fas fa-info-circle"></i> About {{ weather.county }}</h3>
+                        <div class="description-toggle">
+                            <input type="checkbox" id="detailedToggle" class="description-switch">
+                            <label for="detailedToggle" class="toggle-label">
+                                <span class="toggle-brief">Brief</span>
+                                <span class="toggle-detailed">Detailed</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="description-content" id="descriptionContent">
+                        <div class="skeleton-loader">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
                         </div>
                     </div>
                 </section>
